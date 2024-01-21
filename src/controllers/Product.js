@@ -10,6 +10,7 @@ const addProducto = async (req, res) => {
         const { title, description, author, videoUrl, uid, course, tools, lastUpdate, price, miniature, preview, zip } = req.body;
         const files = req.files;
 
+        
         const formData = {
             title,
             author,
