@@ -32,6 +32,16 @@ const registerOperation = async (req, res) => {
     }
 }
 
+const getOperationsByUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const founded = await Operation.find({ uid: userId });
+        res.status(200).send(founded);
+    } catch (error) {
+        res.status(500).send({ error: 'Error on server' });
+    }
+}
 module.exports = {
-    registerOperation
+    registerOperation,
+    getOperationsByUser
 }

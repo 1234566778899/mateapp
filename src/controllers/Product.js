@@ -10,7 +10,7 @@ const addProducto = async (req, res) => {
         const { title, description, author, videoUrl, uid, course, tools, lastUpdate, price, miniature, preview, zip } = req.body;
         const files = req.files;
 
-        
+
         const formData = {
             title,
             author,
@@ -80,7 +80,10 @@ const getProductList = async (req, res) => {
 
         const productList = await Product.aggregate([
             {
-                $match: query
+                $match: {
+                    ...query,
+                    status: '1'
+                }
             },
             {
                 $skip: (paginate - 1) * quantity
