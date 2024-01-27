@@ -16,6 +16,7 @@ app.use('/user', require('./routes/User'));
 app.use('/comment', require('./routes/Comment'));
 app.use('/code', require('./routes/Code'));
 app.use('/operation', require('./routes/Operation'));
+app.use('/payment', require('./routes/Payment'));
 
 app.listen(port, () => {
     console.log('server running on port: ' + port);
