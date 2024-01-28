@@ -97,11 +97,12 @@ const getEarningsByUser = async (req, res) => {
         ];
         const result = await Operation.aggregate(aggregationPipeline);
         const _result = await Operation.aggregate(aggregation);
-        const { mes } = result[0];
-        const { total } = _result[0];
+        const { mes } = result[0] ? result[0] : 0;
+        const { total } = _result[0] ? _result[0] : 0;
         res.status(200).send({ total, mes });
 
     } catch (error) {
+        console.log(error);
         res.status(500).send({ error: 'Error on server' });
     }
 }
