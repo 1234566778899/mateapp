@@ -35,7 +35,7 @@ const registerOperation = async (req, res) => {
 const getOperationsByUser = async (req, res) => {
     try {
         const { userId } = req.params;
-        const founded = await Operation.find({ uid: userId });
+        const founded = await Operation.find({ uid: userId }).sort({ createdAt: -1 });
         res.status(200).send(founded);
     } catch (error) {
         res.status(500).send({ error: 'Error on server' });
