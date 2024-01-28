@@ -1,4 +1,5 @@
 const Operation = require('../db/schemas/Operation');
+const Product = require('../db/schemas/Product');
 const Code = require('../db/schemas/Code');
 const { generateRandomCode } = require('../utils');
 
@@ -25,9 +26,15 @@ const registerOperation = async (req, res) => {
 
         const newOperation = new Operation(data);
         await newOperation.save();
+        for (const product of products) {
+            let founded = await Product.findById(product.code);
+            founded.quantitySold = founded.quantitySold + 1;
+            await founded.save();
+        }
         res.status(200).send(newOperation);
 
     } catch (error) {
+        console.log(error);
         res.status(500).send({ error: 'Error on server' });
     }
 }
@@ -62,13 +69,15 @@ const getEarningsByUser = async (req, res) => {
             {
                 $group: {
                     _id: null,
-                    total: { $sum: "$products.price" }
+                    total: { $sum: "$products.price" },
+                    cantidad: { $sum: 1 }
                 }
             },
             {
                 $project: {
                     _id: 0,
-                    total: 1
+                    total: 1,
+                    cantidad: 1
                 }
             }
         ]
@@ -98,8 +107,9 @@ const getEarningsByUser = async (req, res) => {
         const result = await Operation.aggregate(aggregationPipeline);
         const _result = await Operation.aggregate(aggregation);
         const { mes } = result[0] ? result[0] : 0;
-        const { total } = _result[0] ? _result[0] : 0;
-        res.status(200).send({ total, mes });
+        const { total, cantidad } = _result[0] ? _result[0] : 0;
+
+        res.status(200).send({ total, mes, cantidad });
 
     } catch (error) {
         console.log(error);
