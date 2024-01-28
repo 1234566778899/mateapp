@@ -78,7 +78,7 @@ const getProductList = async (req, res) => {
         if (priceMin == 0 || priceMax == 0 || (priceMax && priceMin))
             query.price = { $gte: priceMin, $lte: priceMax };
 
-        const productList = await Product.aggregate([
+        const products = await Product.aggregate([
             {
                 $match: {
                     ...query,
@@ -92,7 +92,14 @@ const getProductList = async (req, res) => {
                 $limit: quantity
             }
         ]);
-        res.status(200).send(productList);
+
+        const totalProducts = await Product.countDocuments(query);
+
+        res.status(200).send({
+            products,
+            totalPages: Math.ceil(totalProducts / quantity),
+        });
+
     } catch (error) {
         res.status(500).send({ error });
     }
