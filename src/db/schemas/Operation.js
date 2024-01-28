@@ -7,7 +7,8 @@ const OperationSchema = Schema({
             code: String,
             title: String,
             price: Number,
-            zip: String
+            zip: String,
+            uid: String
         }
     ],
     total: Number,

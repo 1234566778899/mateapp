@@ -41,7 +41,72 @@ const getOperationsByUser = async (req, res) => {
         res.status(500).send({ error: 'Error on server' });
     }
 }
+
+const getEarningsByUser = async (req, res) => {
+    try {
+
+        const { userId } = req.params;
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+
+        const aggregation = [
+            {
+                $unwind: "$products"
+            },
+            {
+                $match: {
+                    "products.uid": userId
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$products.price" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    total: 1
+                }
+            }
+        ]
+        const aggregationPipeline = [
+            {
+                $unwind: "$products"
+            },
+            {
+                $match: {
+                    "products.uid": userId,
+                    createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    mes: { $sum: "$products.price" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    mes: 1
+                }
+            }
+        ];
+        const result = await Operation.aggregate(aggregationPipeline);
+        const _result = await Operation.aggregate(aggregation);
+        const { mes } = result[0];
+        const { total } = _result[0];
+        res.status(200).send({ total, mes });
+
+    } catch (error) {
+        res.status(500).send({ error: 'Error on server' });
+    }
+}
 module.exports = {
     registerOperation,
-    getOperationsByUser
+    getOperationsByUser,
+    getEarningsByUser
 }
