@@ -9,4 +9,5 @@ router.post('/retrieve', getProductList);
 router.get('/retrieve/:id', getProduct);
 router.get('/retrieve/user/:userId', getProductsByUser);
 
+
 module.exports = router;
