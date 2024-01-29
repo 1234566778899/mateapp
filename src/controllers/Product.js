@@ -97,7 +97,7 @@ const getProductList = async (req, res) => {
 
         res.status(200).send({
             products,
-            totalPages: Math.ceil(totalProducts / quantity),
+            totalPages: totalProducts ,
         });
 
     } catch (error) {
