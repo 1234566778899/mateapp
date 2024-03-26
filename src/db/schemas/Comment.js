@@ -6,7 +6,7 @@ const CommentSchema = Schema({
     author: String,
     product: {
         type: Schema.Types.ObjectId,
-        ref: 'Product'
+        ref: 'product'
     }
 }, {
     timestamps: true

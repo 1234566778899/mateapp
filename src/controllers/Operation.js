@@ -1,5 +1,5 @@
 const Operation = require('../db/schemas/Operation');
-const Product = require('../db/schemas/Product');
+const Product = require('../db/schemas/Course');
 const Code = require('../db/schemas/Code');
 const { generateRandomCode } = require('../utils');
 

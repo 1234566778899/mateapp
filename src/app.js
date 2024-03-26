@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
     res.send('v.1.0.13')
 })
 
-app.use('/product', require('./routes/Product'));
+app.use('/course', require('./routes/Course'));
 app.use('/user', require('./routes/User'));
 app.use('/comment', require('./routes/Comment'));
 app.use('/code', require('./routes/Code'));
