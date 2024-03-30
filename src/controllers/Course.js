@@ -8,12 +8,13 @@ const blobService = BlobServiceClient.fromConnectionString('DefaultEndpointsProt
 
 const addCourse = async (req, res) => {
     try {
-        const { title, description, author, university, videoUrl, tools, price, preview, materials } = req.body;
+        const { title, description, author, university, user, videoUrl, tools, price, preview, materials } = req.body;
         const files = req.files;
         const formData = {
             title,
             university,
             author,
+            user,
             description,
             videoUrl,
             tools: tools.split(','),
@@ -48,30 +49,25 @@ const addCourse = async (req, res) => {
 
 const getCourseList = async (req, res) => {
     try {
-        const { quantity, paginate, title, course, tool, priceMin, priceMax } = req.body;
+        const { quantity, paginate, title, category } = req.body;
         let query = {}
-
         if (title) {
             query['$or'] = [
-                { title: { $regex: title, $options: "i" } },
-                { course: { $regex: title, $options: "i" } },
-                { tools: { $regex: title, $options: "i" } },
+                { title: { $regex: title, $options: "i" } }
             ]
         }
-        if (course)
-            query.course = { $regex: course, $options: "i" }
-
-        if (tool)
-            query.tools = { $regex: tool, $options: "i" }
-
-        if (priceMin == 0 || priceMax == 0 || (priceMax && priceMin))
-            query.price = { $gte: priceMin, $lte: priceMax };
+        console.log(category)
+        if (category) {
+            query['category'] = { $regex: category, $options: "i" }
+        }
 
         const courses = await Course.aggregate([
             {
                 $match: {
                     ...query,
-                    status: '1'
+                    status: {
+                        $in: ['1', '5']
+                    }
                 }
             },
             {

@@ -12,7 +12,9 @@ const CourseSchema = Schema({
         String
     ],
     status: { type: String, default: '0' },
-    author: String
+    author: String,
+    user: String,
+    category: { type: String, default: 'none' }
 }, {
     timestamps: true
 })
