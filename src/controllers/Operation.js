@@ -1,5 +1,6 @@
 const Operation = require('../db/schemas/Operation');
-const Product = require('../db/schemas/Course');
+const Course = require('../db/schemas/Course');
+const Material = require('../db/schemas/Material');
 const Code = require('../db/schemas/Code');
 const { generateRandomCode } = require('../utils');
 
@@ -9,15 +10,22 @@ const registerOperation = async (req, res) => {
         if (typePay == 'YAPE') {
             const isValid = await Code.findOne({ description: code });
             if (!isValid) return res.status(400).send('Código no válido');
-            if (isValid && !isValid.valid) return res.status(400).send('El código ya fue usado');
-            const idProducts = products.map(x => x.code);
+            if (!isValid.valid) return res.status(400).send('El código ya fue usado');
+            const idProducts = products.map(x => x._id);
             if (!idProducts.every(element => isValid.products.includes(element))) return res.status(400).send('El código no es válido para los productos seleccionados');
             isValid.valid = false;
             await isValid.save();
         }
+
+        const materials = products.map(prod => (
+            {
+                ...prod, code: prod._id, zip: prod.url,
+                materials: prod.materials ? prod.materials.map(x => ({ ...x, code: x._id, zip: x.url })) : []
+            }));
+
         const data = {
             uid,
-            products,
+            products: materials,
             name,
             total,
             typePay,
@@ -27,9 +35,17 @@ const registerOperation = async (req, res) => {
         const newOperation = new Operation(data);
         await newOperation.save();
         for (const product of products) {
-            let founded = await Product.findById(product.code);
-            founded.quantitySold = founded.quantitySold + 1;
-            await founded.save();
+            if (product.course) {
+                let founded = await Material.findById(product._id);
+                founded.quantitySold = founded.quantitySold + 1;
+                await founded.save();
+            } else {
+                for (const mat of product.materials) {
+                    let founded = await Material.findById(mat._id);
+                    founded.quantitySold = founded.quantitySold + 1;
+                    await founded.save();
+                }
+            }
         }
         res.status(200).send(newOperation);
 

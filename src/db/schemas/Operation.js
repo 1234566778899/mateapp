@@ -6,9 +6,16 @@ const OperationSchema = Schema({
         {
             code: String,
             title: String,
+            course: String,
             price: Number,
             zip: String,
-            uid: String
+            materials: [
+                {
+                    code: String,
+                    title: String,
+                    zip: String
+                }
+            ]
         }
     ],
     total: Number,
