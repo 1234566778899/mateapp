@@ -132,8 +132,18 @@ const getEarningsByUser = async (req, res) => {
         res.status(500).send({ error: 'Error on server' });
     }
 }
+const getAllOperations = async (req, res) => {
+    try {
+        const operations = await Operation.find();
+        res.status(200).send(operations);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Error on server' });
+    }
+}
 module.exports = {
     registerOperation,
     getOperationsByUser,
-    getEarningsByUser
+    getEarningsByUser,
+    getAllOperations
 }
