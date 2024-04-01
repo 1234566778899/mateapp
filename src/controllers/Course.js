@@ -56,17 +56,15 @@ const getCourseList = async (req, res) => {
                 { title: { $regex: title, $options: "i" } }
             ]
         }
-        console.log(category)
         if (category) {
             query['category'] = { $regex: category, $options: "i" }
         }
-
         const courses = await Course.aggregate([
             {
                 $match: {
                     ...query,
                     status: {
-                        $in: ['1', '5']
+                        $in: ['1', '2']
                     }
                 }
             },
@@ -113,9 +111,35 @@ const getCoursesByUser = async (req, res) => {
         res.status(500).send({ error });
     }
 }
+
+const updateStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const course = await Course.findById(id);
+        if (!course) return res.status(400).send({ error: 'Curso no encontrado' });
+        course.status = status;
+        await course.save();
+        res.status(200).send({ ok: 'Successful' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
+}
+const getAllCourses = async (req, res) => {
+    try {
+        const courses = await Course.find();
+        res.status(200).send(courses);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error });
+    }
+}
 module.exports = {
     addCourse,
     getCourseList,
     getCourse,
-    getCoursesByUser
+    getCoursesByUser,
+    updateStatus,
+    getAllCourses
 }
